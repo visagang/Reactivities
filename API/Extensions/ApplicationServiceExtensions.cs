@@ -23,12 +23,21 @@ namespace API.Extensions
             {
                 opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
-            services.AddCors(opt => {
-                opt.AddPolicy("CorsPolicy", policy => 
+            // services.AddCors(opt => {
+            //     opt.AddDefaultPolicy(policy => 
+            //     {
+            //         policy.AllowAnyMethod().AllowAnyOrigin().WithOrigins("http://localhost:3000");
+            //     });
+            // });
+            services.AddCors(options =>
                 {
-                    policy.AllowAnyMethod().AllowAnyOrigin().WithOrigins("http://localhost:3000");
+                    options.AddDefaultPolicy(builder => {
+                        builder.WithOrigins("http://localhost:3000");
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                        builder.AllowCredentials();
+                    });
                 });
-            });
             services.AddMediatR(typeof(List.Handler).Assembly);
 
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
