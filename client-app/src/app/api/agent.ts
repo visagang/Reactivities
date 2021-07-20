@@ -4,6 +4,7 @@ import { Activity, ActivityFormValues } from '../models/activity';
 import {history} from '../..'
 import { store } from '../stores/store';
 import { User, UserFormValues } from '../models/user';
+import { Profile } from '../models/profile';
 
 const sleep = (delay: number) => {
     return new Promise((resolve) => {
@@ -78,9 +79,26 @@ const Account ={
     login: (user: UserFormValues) => requests.post<User>('/account/login', user), 
     register: (user: UserFormValues) => requests.post<User>('/account/register', user), 
 }
+
+const Profiles = {
+    get: (username:string) => requests.get<Profile>(`/profiles/${username}`),
+    uploadPhoto: (file: Blob) => {
+        let formData = new FormData();
+        formData.append('File', file);
+        return axios.post('photos', formData, {
+            headers: {'Content-type': 'multipart/form-data'}
+        })
+    },
+    setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
+    deletePhoto: (id: string) => requests.del(`/photos/${id}`),
+    updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
+    listFollowings: (username: string, predicate: string) => requests.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
+     
+}
 const agent = {
     Activities,
-    Account
+    Account,
+    Profiles
 }
 
 export default agent;
